@@ -9,8 +9,10 @@ argocd-prepare:
 argocd-install:
 	kubectl apply -f argo-cd/crds
 	helm upgrade --install argocd argo-cd \
-		--namespace argo \
-		--values argo-cd/values-custom.yaml
+		--namespace argo
+
+argocd-enable-self-update:
+	kubectl apply -f argo-cd/meta
 
 sealed-secrets-prepare:
 	helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
