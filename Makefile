@@ -3,7 +3,7 @@ include .env
 argocd-prepare:
 	helm repo add argo https://argoproj.github.io/argo-helm
 	mkdir argo-cd/crds -p
-	helm template argo/argo-cd | \
+	helm template argo/argo-cd --version 7.5.2 | \
 		yq 'select(.kind == "CustomResourceDefinition")' -s '"./argo-cd/crds/" + .metadata.name + ".yaml"'
 
 argocd-install:

@@ -1,4 +1,4 @@
-argo:
+argo-cd:
   ## Custom resource configuration
   crds:
     # -- Install and upgrade CRDs
