@@ -1,0 +1,89 @@
+---
+        
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: syncthing
+  name: syncthing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: syncthing
+  template:
+    metadata:
+      labels:
+        app: syncthing
+    spec:
+      containers:
+        # container image from linuxserver
+        # https://hub.docker.com/r/linuxserver/syncthing
+      - image: lscr.io/linuxserver/syncthing:latest
+        name: syncthing
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Etc/UTC"
+        ports:
+        - containerPort: 8384
+          name: gui
+          protocol: TCP
+        - containerPort: 22000
+          name: sync-tcp
+          protocol: TCP
+        - containerPort: 22000
+          name: sync-udp
+          protocol: UDP
+        - containerPort: 21027
+          name: discovery
+          protocol: UDP
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: simbk
+          mountPath: /simbk
+      volumes:
+      - name: config
+        hostPath:
+          path: /etc/syncthing/config
+      - name: simbk
+        hostPath:
+          path: /mnt/simbk
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: syncthing
+  labels:
+    app: syncthing
+spec:
+  type: NodePort
+  selector:
+    app: syncthing
+  ports:
+  - name: gui
+    protocol: TCP
+    port: 8384
+    targetPort: 8384
+    nodePort: 30384
+  - name: sync-tcp
+    protocol: TCP
+    port: 22000
+    targetPort: 22000
+    nodePort: 32000
+  - name: sync-udp
+    protocol: UDP
+    port: 22000
+    targetPort: 22000
+    nodePort: 32000
+  - name: discovery
+    protocol: UDP
+    port: 21027
+    targetPort: 21027
+    nodePort: 31027
